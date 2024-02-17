@@ -1,4 +1,4 @@
-package ru.safronov.library.api;
+package ru.safronov.api;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

@@ -1,4 +1,4 @@
-package ru.safronov.library;
+package ru.safronov;
 
 import java.util.List;
 import java.util.Objects;
@@ -9,12 +9,18 @@ import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.safronov.library.repository.BookEntity;
-import ru.safronov.library.repository.BookRepository;
+import ru.safronov.repository.BookEntity;
+import ru.safronov.repository.BookRepository;
 
-public class BookControllerTests extends JUnitSpringBootBase {
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
+public class BookControllerTests {
 
   @Autowired
   private WebTestClient webTestClient;

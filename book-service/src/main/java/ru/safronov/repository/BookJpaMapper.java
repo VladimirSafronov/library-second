@@ -1,9 +1,8 @@
-package ru.safronov.library.repository.mappers;
+package ru.safronov.repository;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import ru.safronov.library.model.Book;
-import ru.safronov.library.repository.BookEntity;
+import ru.safronov.service.Book;
 
 public class BookJpaMapper {
 

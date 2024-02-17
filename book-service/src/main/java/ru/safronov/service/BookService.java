@@ -1,13 +1,12 @@
-package ru.safronov.library.service;
+package ru.safronov.service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
 import java.util.Optional;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-import ru.safronov.library.model.Book;
-import ru.safronov.library.repository.BookRepository;
-import ru.safronov.library.repository.mappers.BookJpaMapper;
+import ru.safronov.repository.BookRepository;
+import ru.safronov.repository.BookJpaMapper;
 
 @Slf4j
 @Service
@@ -19,15 +18,15 @@ public class BookService {
     this.bookRepository = bookRepository;
   }
 
-//  /**
-//   * Аннотация @PostConstruct позволяет произвести какие-то действия после создания бина
-//   */
-//  @PostConstruct
-//  public void generateData() {
-//    addBook("чистый код");
-//    addBook("метрвые души");
-//    addBook("война и мир");
-//  }
+  /**
+   * Аннотация @PostConstruct позволяет произвести какие-то действия после создания бина
+   */
+  @PostConstruct
+  public void generateData() {
+    addBook("чистый код");
+    addBook("метрвые души");
+    addBook("война и мир");
+  }
 
   public List<Book> getAllBooks() {
     return BookJpaMapper.mapToBookList(bookRepository.findAll());

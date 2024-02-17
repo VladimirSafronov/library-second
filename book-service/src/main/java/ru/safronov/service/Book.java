@@ -1,4 +1,4 @@
-package ru.safronov.library.model;
+package ru.safronov.service;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;

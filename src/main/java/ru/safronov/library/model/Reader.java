@@ -33,6 +33,11 @@ public class Reader {
     this.name = name;
   }
 
+  public Reader(Long id, String name) {
+    this.id = id;
+    this.name = name;
+  }
+
   public Reader() {
   }
 }

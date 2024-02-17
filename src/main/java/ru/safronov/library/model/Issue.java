@@ -49,6 +49,13 @@ public class Issue {
     this.issued_at = LocalDateTime.now();
   }
 
+  public Issue(Long id, Long bookId, Long readerId, LocalDateTime issued_at) {
+    this.id = id;
+    this.bookId = bookId;
+    this.readerId = readerId;
+    this.issued_at = issued_at;
+  }
+
   public Issue() {
   }
 }

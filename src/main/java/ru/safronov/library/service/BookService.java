@@ -2,10 +2,14 @@ package ru.safronov.library.service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.List;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import ru.safronov.library.model.Book;
 import ru.safronov.library.repository.BookRepository;
+import ru.safronov.library.repository.mappers.BookJpaMapper;
 
+@Slf4j
 @Service
 public class BookService {
 
@@ -15,29 +19,32 @@ public class BookService {
     this.bookRepository = bookRepository;
   }
 
-  /**
-   * Аннотация @PostConstruct позволяет произвести какие-то действия после создания бина
-   */
-  @PostConstruct
-  public void generateData() {
-    addBook("чистый код");
-    addBook("метрвые души");
-    addBook("война и мир");
-  }
+//  /**
+//   * Аннотация @PostConstruct позволяет произвести какие-то действия после создания бина
+//   */
+//  @PostConstruct
+//  public void generateData() {
+//    addBook("чистый код");
+//    addBook("метрвые души");
+//    addBook("война и мир");
+//  }
+
   public List<Book> getAllBooks() {
-    return bookRepository.findAll();
+    return BookJpaMapper.mapToBookList(bookRepository.findAll());
   }
 
-  public Book getBookById(Long id) {
-    return bookRepository.getReferenceById(id);
+  public Optional<Book> getBookById(Long id) {
+    return Optional.of(BookJpaMapper.mapToBook(bookRepository.findById(id).orElseThrow()));
   }
 
   public List<Book> deleteBook(long id) {
-    bookRepository.delete(bookRepository.getReferenceById(id));
-    return bookRepository.findAll();
+    bookRepository.delete(bookRepository.findById(id).orElseThrow());
+    return BookJpaMapper.mapToBookList(bookRepository.findAll());
   }
 
   public Book addBook(String name) {
-    return bookRepository.save(new Book(name));
+    Book book = new Book(name);
+    bookRepository.save(BookJpaMapper.mapToBookEntity(book));
+    return book;
   }
 }

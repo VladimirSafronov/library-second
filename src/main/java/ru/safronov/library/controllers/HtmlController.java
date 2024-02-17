@@ -41,7 +41,7 @@ public class HtmlController {
 
   @GetMapping("/reader/{id}")
   public String getReaderInfo(@PathVariable Long id, Model model) {
-    Reader reader = readerService.getReader(id);
+    Reader reader = readerService.getReader(id).orElseThrow();
     model.addAttribute("reader", reader);
     model.addAttribute("readerBooks", readerService.getReaderBooks(reader));
     return "readerInfo";

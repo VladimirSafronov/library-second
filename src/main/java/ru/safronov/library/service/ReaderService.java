@@ -2,7 +2,9 @@ package ru.safronov.library.service;
 
 import jakarta.annotation.PostConstruct;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import ru.safronov.library.model.Issue;
@@ -10,6 +12,8 @@ import ru.safronov.library.model.Reader;
 import ru.safronov.library.repository.BookRepository;
 import ru.safronov.library.repository.IssueRepository;
 import ru.safronov.library.repository.ReaderRepository;
+import ru.safronov.library.repository.mappers.IssueJpaMapper;
+import ru.safronov.library.repository.mappers.ReaderJpaMapper;
 
 @Service
 @RequiredArgsConstructor
@@ -18,10 +22,6 @@ public class ReaderService {
   private final ReaderRepository readerRepository;
   private final BookRepository bookRepository;
   private final IssueRepository issueRepository;
-
-  public Reader getReader(long id) {
-    return readerRepository.getReferenceById(id);
-  }
 
   /**
    * Аннотация @PostConstruct позволяет произвести какие-то действия после создания бина
@@ -33,20 +33,24 @@ public class ReaderService {
     createReader("Ольга");
   }
 
+  public Optional<Reader> getReader(long id) {
+    return Optional.of(ReaderJpaMapper.mapToReader(readerRepository.findById(id).orElseThrow()));
+  }
+
   public Reader createReader(String name) {
     Reader reader = new Reader(name);
-    readerRepository.save(reader);
+    readerRepository.save(ReaderJpaMapper.mapToReaderEntity(reader));
     return reader;
   }
 
   public List<Reader> deleteReader(long id) {
-    Reader reader = readerRepository.getReferenceById(id);
-    readerRepository.delete(reader);
-    return readerRepository.findAll();
+    readerRepository.delete(readerRepository.findById(id).orElseThrow());
+    return ReaderJpaMapper.mapToReaderList(readerRepository.findAll());
   }
 
-  public List<Issue> getIssueList(long id) {
-    return issueRepository.findAllByReaderId(id);
+  public Optional<List<Issue>> getIssueList(long id) {
+    return Optional.of(
+        IssueJpaMapper.mapToIssueList(issueRepository.findAllById(Collections.singleton(id))));
   }
 
   /**
@@ -54,15 +58,15 @@ public class ReaderService {
    */
   public List<String> getReaderBooks(Reader reader) {
     List<String> books = new ArrayList<>();
-    for (Issue issue : getIssueList(reader.getId())) {
+    for (Issue issue : getIssueList(reader.getId()).orElseThrow()) {
       if (issue.getReturned_at() == null) {
-        books.add(bookRepository.findBookById(issue.getBookId()).getName());
+        books.add(bookRepository.findById(issue.getBookId()).orElseThrow().getName());
       }
     }
     return books;
   }
 
   public List<Reader> getAllReaders() {
-    return readerRepository.findAll();
+    return ReaderJpaMapper.mapToReaderList(readerRepository.findAll());
   }
 }

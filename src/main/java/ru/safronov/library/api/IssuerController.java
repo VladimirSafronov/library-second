@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import ru.safronov.library.api.mappers.IssueMapper;
 import ru.safronov.library.exceptions.TooManyBooksException;
 import ru.safronov.library.model.Issue;
 import ru.safronov.library.service.IssuerService;
@@ -29,36 +30,45 @@ public class IssuerController {
 
   @PutMapping(path = "/{issueId}")
   @Operation(summary = "return book", description = "Читатель возвращает книгу (заполняется поле returned_at)")
-  public ResponseEntity<Issue> returnBook(@PathVariable long issueId) {
+  public ResponseEntity<IssueDTO> returnBook(@PathVariable long issueId) {
+    final IssueDTO issueDTO;
     final Issue issue;
     try {
-      issue = service.getIssue(issueId);
+      issue = service.getIssue(issueId).orElseThrow();
+      issueDTO = IssueMapper.mapToIssueDto(issue);
       service.returnBook(issue);
     } catch (NoSuchElementException ex) {
-      return ResponseEntity.notFound().build();
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }
-    return new ResponseEntity<>(issue, HttpStatus.OK);
+    issueDTO.setReturned_at(issue.getReturned_at());
+    return new ResponseEntity<>(issueDTO, HttpStatus.OK);
   }
 
   @PostMapping
   @Operation(summary = "issue book", description = "Составление записи о выдаче книги")
-  public ResponseEntity<Issue> issueBook(@RequestBody IssueRequest request) {
-    log.info("Получен запрос на выдачу: readerId = {}, bookId = {}", request.getReaderId(),
-        request.getBookId());
+  public ResponseEntity<IssueDTO> issueBook(@RequestBody Issue issue) {
+    log.info("Получен запрос на выдачу: readerId = {}, bookId = {}", issue.getReaderId(),
+        issue.getBookId());
 
-    final Issue issue;
+    final IssueDTO issueDto;
     try {
-      issue = service.issue(request);
+      issueDto = IssueMapper.mapToIssueDto(service.issue(issue));
     } catch (TooManyBooksException e) {
       log.info(e.getMessage());
       return ResponseEntity.status(HttpStatus.CONFLICT).build();
     }
-    return new ResponseEntity<>(issue, HttpStatus.OK);
+    return new ResponseEntity<>(issueDto, HttpStatus.OK);
   }
 
   @GetMapping(path = "/{id}")
   @Operation(summary = "get issue by id", description = "Получение информации о факте выдачи книги по ее идентификатору")
-  public ResponseEntity<Issue> getIssueInfo(@PathVariable long id) {
-    return new ResponseEntity<>(service.getIssue(id), HttpStatus.OK);
+  public ResponseEntity<IssueDTO> getIssueInfo(@PathVariable long id) {
+    final IssueDTO issueDTO;
+    try {
+      issueDTO = IssueMapper.mapToIssueDto(service.getIssue(id).orElseThrow());
+    } catch (NoSuchElementException ex) {
+      return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+    }
+    return new ResponseEntity<>(issueDTO, HttpStatus.OK);
   }
 }

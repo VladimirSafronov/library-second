@@ -1,9 +1,9 @@
-package ru.safronov.library.api.mappers;
+package ru.safronov.api;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import ru.safronov.library.api.BookDTO;
-import ru.safronov.library.model.Book;
+import ru.safronov.api.BookDTO;
+import ru.safronov.service.Book;
 
 /**
  * Mapper BookDTO <-> Book

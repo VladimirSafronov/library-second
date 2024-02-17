@@ -1,4 +1,4 @@
-package ru.safronov.library.api;
+package ru.safronov.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,10 +14,12 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
-import ru.safronov.library.api.mappers.BookMapper;
-import ru.safronov.library.model.Book;
-import ru.safronov.library.service.BookService;
+import ru.safronov.api.BookMapper;
+import ru.safronov.aspect.Timer;
+import ru.safronov.service.Book;
+import ru.safronov.service.BookService;
 
+@Timer
 @RestController
 @RequiredArgsConstructor
 @RequestMapping(path = "/book")

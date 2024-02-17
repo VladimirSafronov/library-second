@@ -16,7 +16,6 @@ import ru.safronov.timer.TimerProperties;
 public class TimerAspect {
 
   private final TimerProperties timerProperties;
-
   /**
    * within пишется под тип
    */

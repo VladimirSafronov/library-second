@@ -10,6 +10,5 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 @Data
 @ConfigurationProperties("timer")
 public class TimerProperties {
-
   //настройки
 }

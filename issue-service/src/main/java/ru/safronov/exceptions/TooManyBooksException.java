@@ -1,4 +1,4 @@
-package ru.safronov.library.exceptions;
+package ru.safronov.exceptions;
 
 public class TooManyBooksException extends RuntimeException {
 

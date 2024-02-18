@@ -1,4 +1,4 @@
-package ru.safronov.library.repository;
+package ru.safronov.poi.storage;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.Id;

@@ -1,4 +1,4 @@
-package ru.safronov.library.api;
+package ru.safronov.api;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -14,10 +14,9 @@ import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import ru.safronov.library.api.mappers.IssueMapper;
-import ru.safronov.library.exceptions.TooManyBooksException;
-import ru.safronov.library.model.Issue;
-import ru.safronov.library.service.IssuerService;
+import ru.safronov.exceptions.TooManyBooksException;
+import ru.safronov.core.domain.Issue;
+import ru.safronov.core.service.IssuerService;
 
 @Slf4j
 @RestController
@@ -34,7 +33,7 @@ public class IssuerController {
     final IssueDTO issueDTO;
     final Issue issue;
     try {
-      issue = service.getIssue(issueId).orElseThrow();
+      issue = service.getIssue(issueId);
       issueDTO = IssueMapper.mapToIssueDto(issue);
       service.returnBook(issue);
     } catch (NoSuchElementException ex) {
@@ -65,7 +64,7 @@ public class IssuerController {
   public ResponseEntity<IssueDTO> getIssueInfo(@PathVariable long id) {
     final IssueDTO issueDTO;
     try {
-      issueDTO = IssueMapper.mapToIssueDto(service.getIssue(id).orElseThrow());
+      issueDTO = IssueMapper.mapToIssueDto(service.getIssue(id));
     } catch (NoSuchElementException ex) {
       return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
     }

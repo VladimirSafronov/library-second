@@ -1,4 +1,4 @@
-package ru.safronov.library.api;
+package ru.safronov.api;
 
 import java.time.LocalDateTime;
 import lombok.Data;

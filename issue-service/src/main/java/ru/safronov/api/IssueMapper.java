@@ -1,9 +1,8 @@
-package ru.safronov.library.api.mappers;
+package ru.safronov.api;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import ru.safronov.library.api.IssueDTO;
-import ru.safronov.library.model.Issue;
+import ru.safronov.core.domain.Issue;
 
 /**
  * Mapper IssueDTO <-> Issue

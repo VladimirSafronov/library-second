@@ -1,7 +1,6 @@
-
-application:
-  issue:
-    max-allowed-books: 3
+#application:
+#  issue:
+#    max-allowed-books: 3
 
 server:
   port: 8180

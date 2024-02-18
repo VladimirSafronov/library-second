@@ -1,4 +1,4 @@
-package ru.safronov.library;
+package ru.safronov;
 
 import java.time.LocalDateTime;
 import lombok.Data;
@@ -9,23 +9,29 @@ import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
+import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.safronov.library.repository.BookEntity;
-import ru.safronov.library.repository.BookRepository;
-import ru.safronov.library.repository.IssueEntity;
-import ru.safronov.library.repository.IssueRepository;
-import ru.safronov.library.repository.ReaderEntity;
-import ru.safronov.library.repository.ReaderRepository;
+import ru.safronov.core.domain.Book;
+import ru.safronov.core.domain.Issue;
+import ru.safronov.core.domain.Reader;
+import ru.safronov.core.port.BookProvider;
+import ru.safronov.core.port.IssueStorage;
+import ru.safronov.core.port.ReaderProvider;
 
+@ActiveProfiles("test")
+@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@AutoConfigureWebTestClient
 @Slf4j
-public class IssueControllerTest extends JUnitSpringBootBase {
+public class IssueControllerTest {
 
   @Autowired
-  private IssueRepository issueRepository;
+  private IssueStorage issueStorage;
   @Autowired
-  private BookRepository bookRepository;
+  private BookProvider bookProvider;
   @Autowired
-  private ReaderRepository readerRepository;
+  private ReaderProvider readerProvider;
   @Autowired
   private WebTestClient webTestClient;
   private static final int DATA_COUNT = 2;
@@ -43,29 +49,29 @@ public class IssueControllerTest extends JUnitSpringBootBase {
   @BeforeEach
   void setTestData() {
     for (int i = 1; i <= DATA_COUNT; i++) {
-      bookRepository.save(new BookEntity((long) i, "Книга №" + i));
-      readerRepository.save(new ReaderEntity((long) i, "Читатель №" + i));
+      bookProvider.save(new Book((long) i, "Книга №" + i));
+      readerProvider.save(new Reader((long) i, "Читатель №" + i));
     }
-    IssueEntity issueEntity = new IssueEntity(1L, 1L, 1L);
-    issueEntity.setIssued_at(LocalDateTime.now());
-    issueRepository.save(issueEntity);
-    IssueEntity issueEntity2 = new IssueEntity(2L, 2L, 2L);
-    issueRepository.save(issueEntity2);
+    Issue issue = new Issue(1L, 1L, 1L);
+    issue.setIssued_at(LocalDateTime.now());
+    issueStorage.save(issue);
+    Issue issue2 = new Issue(2L, 2L, 2L);
+    issueStorage.save(issue2);
   }
 
   @AfterEach
   void cleanData() {
-    bookRepository.deleteAll();
-    readerRepository.deleteAll();
-    issueRepository.deleteAll();
+    bookProvider.deleteAll();
+    readerProvider.deleteAll();
+    issueStorage.deleteAll();
   }
 
   @Test
   void returnBookThenSuccess() {
-    long notReturnBookId = issueRepository.findAll().stream()
+    long notReturnBookId = issueStorage.findAll().stream()
         .filter(it -> it.getReturned_at() == null)
         .findFirst()
-        .map(IssueEntity::getId).orElseThrow();
+        .map(Issue::getId).orElseThrow();
     Assertions.assertTrue(notReturnBookId > 0);
     JUnitIssueResponse response = webTestClient.put()
         .uri("/issue/" + notReturnBookId)
@@ -93,14 +99,14 @@ public class IssueControllerTest extends JUnitSpringBootBase {
 
   @Test
   void getBookThenSuccess() {
-    IssueEntity issueEntity = issueRepository.findAll().stream()
+    Issue issue = issueStorage.findAll().stream()
         .filter(it -> it.getIssued_at() == null)
         .findFirst().orElseThrow();
-    Assertions.assertNotNull(issueEntity);
+    Assertions.assertNotNull(issue);
 
     JUnitIssueResponse response = webTestClient.post()
         .uri("/issue")
-        .bodyValue(issueEntity)
+        .bodyValue(issue)
         .exchange()
         .expectStatus().isOk()
         .expectBody(JUnitIssueResponse.class)
@@ -114,18 +120,17 @@ public class IssueControllerTest extends JUnitSpringBootBase {
   @Test
   @Disabled
   void getTooMuchBookThenConflict() {
-    IssueEntity issueEntity = issueRepository.findAll().stream()
+    Issue issue = issueStorage.findAll().stream()
         .filter(it -> it.getIssued_at() == null)
         .findFirst().orElseThrow();
-    Assertions.assertNotNull(issueEntity);
-    readerRepository.findById(issueEntity.getReaderId()).orElseThrow()
-        .setBooksCount(Integer.MAX_VALUE);
-    issueRepository.save(issueEntity);
-    int booksCount = readerRepository.findById(issueEntity.getReaderId()).orElseThrow().getBooksCount();
+    Assertions.assertNotNull(issue);
+    readerProvider.findById(issue.getReaderId()).setBooksCount(Integer.MAX_VALUE);
+    issueStorage.save(issue);
+    int booksCount = readerProvider.findById(issue.getReaderId()).getBooksCount();
 
     JUnitIssueResponse response = webTestClient.post()
         .uri("/issue")
-        .bodyValue(issueEntity)
+        .bodyValue(issue)
         .exchange()
         .expectStatus().is4xxClientError()
         .expectBody(JUnitIssueResponse.class)
@@ -138,10 +143,10 @@ public class IssueControllerTest extends JUnitSpringBootBase {
 
   @Test
   void getIssueByExistIdThenSuccess() {
-    long existIssueId = issueRepository.findAll().stream()
+    long existIssueId = issueStorage.findAll().stream()
         .filter(it -> it.getId() > 0)
         .findFirst()
-        .map(IssueEntity::getId)
+        .map(Issue::getId)
         .orElseThrow();
 
     JUnitIssueResponse responseBody = webTestClient.get()

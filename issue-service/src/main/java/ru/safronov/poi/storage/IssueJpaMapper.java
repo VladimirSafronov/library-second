@@ -1,9 +1,8 @@
-package ru.safronov.library.repository.mappers;
+package ru.safronov.poi.storage;
 
 import java.util.List;
 import java.util.stream.Collectors;
-import ru.safronov.library.model.Issue;
-import ru.safronov.library.repository.IssueEntity;
+import ru.safronov.core.domain.Issue;
 
 public class IssueJpaMapper {
 

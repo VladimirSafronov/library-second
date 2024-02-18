@@ -1,4 +1,4 @@
-package ru.safronov.library.model;
+package ru.safronov.core.domain;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -54,6 +54,12 @@ public class Issue {
     this.bookId = bookId;
     this.readerId = readerId;
     this.issued_at = issued_at;
+  }
+
+  public Issue(Long id, Long bookId, Long readerId) {
+    this.id = id;
+    this.bookId = bookId;
+    this.readerId = readerId;
   }
 
   public Issue() {

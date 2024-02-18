@@ -46,4 +46,8 @@ public class BookService {
     bookRepository.save(BookJpaMapper.mapToBookEntity(book));
     return book;
   }
+
+  public void deleteAllBooks() {
+    bookRepository.deleteAll();
+  }
 }

@@ -2,7 +2,15 @@ application:
   issue:
     max-allowed-books: 3
 
+eureka:
+  client:
+    service-url:
+      default-zone: http://localhost:8761/eureka
+
+
 spring:
+  application:
+    name: issue-service
   datasource:
     url: jdbc:h2:mem:test
     username: sa
@@ -15,4 +23,4 @@ spring:
         implicit-strategy: org.springframework.boot.orm.jpa.hibernate.SpringImplicitNamingStrategy
         physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 server:
-  port: 8282
+  port: 8280

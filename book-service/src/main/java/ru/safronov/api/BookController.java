@@ -65,4 +65,11 @@ public class BookController {
     Book book = bookService.addBook(name);
     return new ResponseEntity<>(BookMapper.mapToDto(book), HttpStatus.CREATED);
   }
+
+  @DeleteMapping
+  @Operation(summary = "delete all books", description = "Удаляет все книги")
+  public ResponseEntity<Void> deleteAll() {
+    bookService.deleteAllBooks();
+    return ResponseEntity.status(HttpStatus.OK).build();
+  }
 }

@@ -2,9 +2,11 @@ package ru.safronov.poi.storage;
 
 import java.util.List;
 import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
 import ru.safronov.core.domain.Issue;
 import ru.safronov.core.port.IssueStorage;
 
+@Service
 @RequiredArgsConstructor
 public class IssueStorageImpl implements IssueStorage {
 

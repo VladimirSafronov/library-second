@@ -1,10 +1,12 @@
 package ru.safronov.poi.reader;
 
 import com.netflix.discovery.EurekaClient;
+import org.springframework.stereotype.Service;
 import ru.safronov.core.domain.Reader;
 import ru.safronov.core.port.ReaderProvider;
 import ru.safronov.poi.BaseProvider;
 
+@Service
 public class ReaderProviderImpl extends BaseProvider implements ReaderProvider {
 
   public ReaderProviderImpl(EurekaClient eurekaClient) {

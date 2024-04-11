@@ -1,7 +1,7 @@
 package ru.safronov.poi.issue;
 
-import com.netflix.discovery.EurekaClient;
 import java.util.List;
+import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalancerExchangeFilterFunction;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
 import ru.safronov.core.domain.Issue;
@@ -11,15 +11,15 @@ import ru.safronov.poi.BaseProvider;
 @Service
 public class IssueProviderImpl extends BaseProvider implements IssueProvider {
 
-  protected IssueProviderImpl(EurekaClient eurekaClient) {
-    super(eurekaClient, "ISSUE-SERVICE");
+  protected IssueProviderImpl(ReactorLoadBalancerExchangeFilterFunction loadBalancer) {
+    super(loadBalancer);
   }
 
   @Override
   public List<Issue> findAllById(Long readerId) {
 
     List<IssueDto> issueDtoList = webClient.get()
-        .uri(getServiceIp(serviceName) + "/reader/" + readerId)
+        .uri("http://issue-service/reader/" + readerId)
         .retrieve()
         .bodyToMono(new ParameterizedTypeReference<List<IssueDto>>() {})
         .block();

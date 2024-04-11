@@ -4,7 +4,6 @@ import org.springframework.cloud.client.loadbalancer.reactive.ReactorLoadBalance
 import org.springframework.web.reactive.function.client.WebClient;
 
 public class BaseProvider {
-
   protected final WebClient webClient;
 
   protected BaseProvider(

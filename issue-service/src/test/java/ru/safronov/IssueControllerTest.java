@@ -1,21 +1,25 @@
 package ru.safronov;
 
+import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import java.time.LocalDateTime;
 import lombok.Data;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;
-import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.reactive.AutoConfigureWebTestClient;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.ActiveProfiles;
+import org.springframework.test.context.ContextConfiguration;
+import org.springframework.test.context.junit.jupiter.SpringExtension;
 import org.springframework.test.web.reactive.server.WebTestClient;
-import ru.safronov.core.domain.Book;
+import ru.safronov.api.IssuerController;
 import ru.safronov.core.domain.Issue;
-import ru.safronov.core.domain.Reader;
 import ru.safronov.core.port.BookProvider;
 import ru.safronov.core.port.IssueStorage;
 import ru.safronov.core.port.ReaderProvider;
@@ -24,14 +28,16 @@ import ru.safronov.core.port.ReaderProvider;
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @AutoConfigureWebTestClient
 @Slf4j
+//@ExtendWith(SpringExtension.class)
+//@ContextConfiguration(classes = IssuerController.class)
 public class IssueControllerTest {
 
   @Autowired
   private IssueStorage issueStorage;
-  @Autowired
-  private BookProvider bookProvider;
-  @Autowired
-  private ReaderProvider readerProvider;
+//  @MockBean
+//  private BookProvider bookProvider;
+//  @MockBean
+//  private ReaderProvider readerProvider;
   @Autowired
   private WebTestClient webTestClient;
   private static final int DATA_COUNT = 2;
@@ -49,8 +55,8 @@ public class IssueControllerTest {
   @BeforeEach
   void setTestData() {
     for (int i = 1; i <= DATA_COUNT; i++) {
-      bookProvider.save(new Book((long) i, "Книга №" + i));
-      readerProvider.save(new Reader((long) i, "Читатель №" + i));
+//      bookProvider.save(new Book((long) i, "Книга №" + i));
+//      readerProvider.save(new Reader((long) i, "Читатель №" + i));
     }
     Issue issue = new Issue(1L, 1L, 1L);
     issue.setIssued_at(LocalDateTime.now());
@@ -61,10 +67,18 @@ public class IssueControllerTest {
 
   @AfterEach
   void cleanData() {
-    bookProvider.deleteAll();
-    readerProvider.deleteAll();
+//    bookProvider.deleteAll();
+//    readerProvider.deleteAll();
     issueStorage.deleteAll();
   }
+
+//  @Test
+//  void create() {
+//    assertNotNull(issueStorage);
+//    assertNotNull(bookProvider);
+//    assertNotNull(readerProvider);
+//    assertNotNull(webTestClient);
+//  }
 
   @Test
   void returnBookThenSuccess() {
@@ -80,8 +94,8 @@ public class IssueControllerTest {
         .expectBody(JUnitIssueResponse.class)
         .returnResult().getResponseBody();
 
-    Assertions.assertNotNull(response);
-    Assertions.assertNotNull(response.returned_at);
+    assertNotNull(response);
+    assertNotNull(response.returned_at);
     showResponse(response);
   }
 
@@ -102,7 +116,7 @@ public class IssueControllerTest {
     Issue issue = issueStorage.findAll().stream()
         .filter(it -> it.getIssued_at() == null)
         .findFirst().orElseThrow();
-    Assertions.assertNotNull(issue);
+    assertNotNull(issue);
 
     JUnitIssueResponse response = webTestClient.post()
         .uri("/issue")
@@ -112,34 +126,34 @@ public class IssueControllerTest {
         .expectBody(JUnitIssueResponse.class)
         .returnResult().getResponseBody();
 
-    Assertions.assertNotNull(response);
-    Assertions.assertNotNull(response.getIssued_at());
+    assertNotNull(response);
+    assertNotNull(response.getIssued_at());
     showResponse(response);
   }
 
-  @Test
-  @Disabled
-  void getTooMuchBookThenConflict() {
-    Issue issue = issueStorage.findAll().stream()
-        .filter(it -> it.getIssued_at() == null)
-        .findFirst().orElseThrow();
-    Assertions.assertNotNull(issue);
-    readerProvider.findById(issue.getReaderId()).setBooksCount(Integer.MAX_VALUE);
-    issueStorage.save(issue);
-    int booksCount = readerProvider.findById(issue.getReaderId()).getBooksCount();
-
-    JUnitIssueResponse response = webTestClient.post()
-        .uri("/issue")
-        .bodyValue(issue)
-        .exchange()
-        .expectStatus().is4xxClientError()
-        .expectBody(JUnitIssueResponse.class)
-        .returnResult().getResponseBody();
-
-    Assertions.assertNotNull(response);
-    Assertions.assertNotNull(response.getIssued_at());
-    showResponse(response);
-  }
+//  @Test
+//  @Disabled
+//  void getTooMuchBookThenConflict() {
+//    Issue issue = issueStorage.findAll().stream()
+//        .filter(it -> it.getIssued_at() == null)
+//        .findFirst().orElseThrow();
+//    Assertions.assertNotNull(issue);
+//    readerProvider.findById(issue.getReaderId()).setBooksCount(Integer.MAX_VALUE);
+//    issueStorage.save(issue);
+//    int booksCount = readerProvider.findById(issue.getReaderId()).getBooksCount();
+//
+//    JUnitIssueResponse response = webTestClient.post()
+//        .uri("/issue")
+//        .bodyValue(issue)
+//        .exchange()
+//        .expectStatus().is4xxClientError()
+//        .expectBody(JUnitIssueResponse.class)
+//        .returnResult().getResponseBody();
+//
+//    Assertions.assertNotNull(response);
+//    Assertions.assertNotNull(response.getIssued_at());
+//    showResponse(response);
+//  }
 
   @Test
   void getIssueByExistIdThenSuccess() {
@@ -156,8 +170,8 @@ public class IssueControllerTest {
         .expectBody(JUnitIssueResponse.class)
         .returnResult().getResponseBody();
 
-    Assertions.assertNotNull(responseBody);
-    Assertions.assertNotNull(responseBody.getId());
+    assertNotNull(responseBody);
+    assertNotNull(responseBody.getId());
   }
 
   @Test

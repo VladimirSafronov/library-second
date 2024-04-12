@@ -7,7 +7,7 @@ import ru.safronov.core.domain.Reader;
 public class ReaderJpaMapper {
 
   public static Reader mapToReader(ReaderEntity entity) {
-    return new Reader(entity.getId(), entity.getName());
+    return new Reader(entity.getId(), entity.getName(), entity.getBooksCount());
   }
 
   public static ReaderEntity mapToReaderEntity(Reader reader) {
